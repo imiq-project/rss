@@ -3,6 +3,10 @@ services:
     build: .
     pull_policy: build
     restart: always
+    volumes:
+      - rss_data:/data
     environment:
       - LINKEDIN_EMAIL=${LINKEDIN_EMAIL}
       - LINKEDIN_PASSWORD=${LINKEDIN_PASSWORD}
+volumes:
+  rss_data:
