@@ -1,0 +1,4 @@
+flask>=3.1
+feedgen==1.0
+apscheduler>=3.11
+linkedin-scraper>=3.1

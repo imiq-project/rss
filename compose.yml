@@ -1,0 +1,7 @@
+services:
+  server:
+    build: .
+    pull_policy: build
+    environment:
+      - LINKEDIN_EMAIL=${LINKEDIN_EMAIL}
+      - LINKEDIN_PASSWORD=${LINKEDIN_PASSWORD}
