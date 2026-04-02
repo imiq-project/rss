@@ -1,5 +1,5 @@
 services:
-  server:
+  rss:
     build: .
     pull_policy: build
     environment:
