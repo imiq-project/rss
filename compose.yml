@@ -2,6 +2,7 @@ services:
   rss:
     build: .
     pull_policy: build
+    restart: always
     environment:
       - LINKEDIN_EMAIL=${LINKEDIN_EMAIL}
       - LINKEDIN_PASSWORD=${LINKEDIN_PASSWORD}
