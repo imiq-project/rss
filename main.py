@@ -10,9 +10,11 @@ import time
 LINKEDIN_EMAIL = os.environ["LINKEDIN_EMAIL"]
 LINKEDIN_PASSWORD = os.environ["LINKEDIN_PASSWORD"]
 SESSION_FILE = "/data/session.json"
+LAST_FEED_FILE = "/data/feed.xml"
+
 LINKEDIN_URL = "https://de.linkedin.com/company/imiq-intelligenter-mobilitätsraum-im-quartier/posts/"
 
-cached_feed = ""
+cached_feed: bytes = b""
 
 
 async def login():
@@ -52,10 +54,29 @@ async def scrape_company_posts():
 
 
 def update_feed():
+    global cached_feed
+
     print("Updating RSS feed...")
-    asyncio.run(scrape_company_posts())
+    try:
+        asyncio.run(scrape_company_posts())
+    except Exception as e:
+        print(f"Failed: {e}")
+        return
+
+    with open(LAST_FEED_FILE, "w") as f:
+        f.write(cached_feed.decode())
+
     print("Done.")
 
+def load_last_feed():
+    global cached_feed
+    print("Loading last feed...")
+    try:
+        with open(LAST_FEED_FILE) as f:
+            cached_feed = f.read().encode()
+        print(f"Done (len={len(cached_feed)})")
+    except Exception as e:
+        print(f"Cannot load last feed: {e}")
 
 app = Flask(__name__)
 
@@ -66,6 +87,8 @@ def feed():
 
 
 if __name__ == "__main__":
+
+    load_last_feed()
 
     if not os.path.exists(SESSION_FILE):
         print(f"{SESSION_FILE} not found, logging in as f{LINKEDIN_EMAIL}...")
