@@ -4,11 +4,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from linkedin_scraper import BrowserManager, CompanyPostsScraper, login_with_credentials
 import asyncio
 import os
+import time
 
 
 LINKEDIN_EMAIL = os.environ["LINKEDIN_EMAIL"]
 LINKEDIN_PASSWORD = os.environ["LINKEDIN_PASSWORD"]
-SESSION_FILE = "session.json"
+SESSION_FILE = "/data/session.json"
 LINKEDIN_URL = "https://de.linkedin.com/company/imiq-intelligenter-mobilitätsraum-im-quartier/posts/"
 
 cached_feed = ""
@@ -68,7 +69,13 @@ if __name__ == "__main__":
 
     if not os.path.exists(SESSION_FILE):
         print(f"{SESSION_FILE} not found, logging in as f{LINKEDIN_EMAIL}...")
-        asyncio.run(login())
+        try:
+            asyncio.run(login())
+        except Exception as e:
+            print(f"Login failed: {e}")
+            while True:
+                time.sleep(1)
+
         print("Done.")
 
     # Schedule daily update (06:00)
