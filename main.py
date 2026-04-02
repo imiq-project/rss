@@ -33,20 +33,24 @@ async def scrape_company_posts():
     async with BrowserManager(headless=True) as browser:
         await browser.load_session(SESSION_FILE)
         scraper = CompanyPostsScraper(browser.page)
-        posts = await scraper.scrape(LINKEDIN_URL, limit=10)
+        posts = await scraper.scrape(LINKEDIN_URL, limit=3)
 
     fg = FeedGenerator()
+    fg.load_extension('media')  # Load the media extension
     fg.title("IMIQ LinkedIn Feed")
     fg.link(href=LINKEDIN_URL)
     fg.description("Daily LinkedIn posts")
 
-    for post in posts:
+    for post in reversed(posts):
         fe = fg.add_entry()
         fe.title(f"{post.posted_date} ago")
         fe.description(post.text)
         fe.link(href=post.linkedin_url)
         for img_url in post.image_urls:
-            fe.enclosure(url=img_url, type="image/jpeg", length=0)
+            fe.media.content(
+                url=img_url,
+                medium='image'
+            )
         # fe.pubDate(datetime.datetime.now(datetime.timezone.utc))
 
     global cached_feed
